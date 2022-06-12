@@ -1,29 +1,45 @@
 #!/bin/sh
 
+
+#   Base Folders
+
+folder="$HOME/.ServedSpicy"
 config="$HOME/.config/ServedSpicy"
-plugins="$HOME/.cache/deno/plug"
-
-base="$(dirname -- $(readlink -fn -- "$0"; echo x))/"
+plugin="$HOME/.cache/deno/plug"
 
 
-# echo ""
-# echo "File Location: $base"
-# echo ""
+#   Deno Binary
+
+deno="$HOME/.deno/bin/deno"
 
 
-source="${base}/Client"
+#   Logging
+
+logs="${folder}/Logs"
+log="${logs}/Log.txt"
+
+mkdir $logs
+
+
+echo "Starting ServedSpicy" > $log
+echo "Folder: ${folder}" >> $log
+echo "Config: ${config}" >> $log
+echo "Plugin: ${plugin}" >> $log
+
+
+app="${folder}/App"
+source="${app}/Client"
 imports="${source}/Imports.json"
-app="${source}/App.js"
+launcher="${source}/App.js"
 
-interface="${base}/Interface"
-desktopEntry="/usr/share/applications/ServedSpicy.desktop"
+interface="${app}/Interface"
 
-# echo ""
-# echo "Interface Location: $interface"
-# echo ""
 
-readable="${config},${interface},${plugins},${source},${desktopEntry}"
-writable="${config},${plugins},${desktopEntry}"
+readable="${config},${interface},${plugin},${source}"
+writable="${config},${plugin}"
+
+echo "Readable: ${readable}" >> $log
+echo "Writable: ${writable}" >> $log
 
 i=1 ; while [ $i -le 100 ]; do echo ""; i=$(( i +1 )); done
 
@@ -38,7 +54,7 @@ deno run                    \
     --allow-read=$readable  \
     --importmap=$imports    \
     --unstable              \
-    $app                    \
+    $launcher               \
     --webserverPort=$1      \
     --socketPort=$2         \
     release
